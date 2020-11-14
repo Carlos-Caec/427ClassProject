@@ -1,8 +1,11 @@
+//Rounds -- A parent component for the app's "rounds" mode.
+//Manages the rounds data for the current user and conditionally renders the
+//appropriate rounds mode page based on App's mode, which is passed in as a prop.
+
 import React from 'react';
-import AppMode from "./../AppMode.js";
+import AppMode from './../AppMode.js';
 
-class LoginPage extends React.Component {
-
+class twoFactor extends React.Component {
     constructor() {
         super();
         //Create a ref for the email input DOM element
@@ -31,6 +34,7 @@ class LoginPage extends React.Component {
 
     render() {
         return(
+            
         <div id="login-mode-div" className="padded-page">
         <center>
             <h1 />
@@ -47,25 +51,6 @@ class LoginPage extends React.Component {
                 required={true}
                 />
             </label>
-            <p />
-            <label htmlFor="passwordInput" style={{ padding: 0, fontSize: 24 }}>
-                Password:
-                <input
-                className="form-control login-text"
-                type="password"
-                placeholder="Enter Password"
-                pattern="[A-Za-z0-9!@#$%^&*()_+\-]+"
-                required={true}
-                />
-            </label>
-            <p className="bg-danger" id="feedback" style={{ fontSize: 16 }} />
-            <button
-                type="submit"
-                className="btn-color-theme btn btn-primary btn-block login-btn">
-                <span id="login-btn-icon" className={this.state.faIcon}/>
-                &nbsp;{this.state.btnLabel}
-            </button>
-            <br />
             <p>
                 <i>Need help signing in?</i>
             </p>
@@ -74,9 +59,19 @@ class LoginPage extends React.Component {
             </p>
             </form>
         </center>
+        <div className="padded-page">
+                <center>
+                <h1 >Network Authentication</h1>
+                <h2>This page is under construction.</h2>
+                <h2>I need a modal box to input the SMS message for verificationn</h2>
+                <img src="https://canestrinilex.com/assets/Uploads/blog-pics/f613404b87/Topsecretsidebar__ScaleWidthWzcwMF0.jpg"
+                 height="200" width="200"/>
+                <p style={{fontStyle: "italic"}}>Version 2.0</p>
+                </center>
+            </div>
         </div>
         )
     }
 }
 
-export default LoginPage;
+export default twoFactor;

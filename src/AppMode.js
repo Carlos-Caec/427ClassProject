@@ -2,11 +2,8 @@
 
 const AppMode = {
     LOGIN: "LoginMode",
-    FEED: "FeedMode",
-    ROUNDS: "RoundsMode",
-    ROUNDS_LOGROUND: "RoundsMode-LogRound",
-    ROUNDS_EDITROUND: "RoundsMode-EditRound",
-    COURSES: "CoursesMode"
+    HOMEPAGE: "HomePageMode",
+    TWOFACTOR: "SMSMode",
 };
 
 Object.freeze(AppMode); //This ensures that the object is immutable.

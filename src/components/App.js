@@ -2,31 +2,22 @@ import React from 'react';
 import NavBar from './NavBar.js';
 import SideMenu from './SideMenu.js';
 import ModeBar from './ModeBar.js';
-import FloatingButton from './FloatingButton.js';
 import LoginPage from './LoginPage.js';
 import AppMode from "./../AppMode.js"
-import FeedPage from './FeedPage.js';
-import Rounds from './Rounds.js';
-import CoursesPage from './CoursesPage.js';
+import HomePage from './HomePage.js';
+import TWOFACTOR from './twoFactor.js';
 import AboutBox from './AboutBox.js';
+import twoFactor from './twoFactor.js';
 
 const modeTitle = {};
-modeTitle[AppMode.LOGIN] = "Welcome to Fantasy Football Scores";
-modeTitle[AppMode.FEED] = "Home Page Feed";
-modeTitle[AppMode.ROUNDS] = "SCOREBOARD";
-modeTitle[AppMode.ROUNDS_LOGROUND] = "Log Points";
-modeTitle[AppMode.ROUNDS_EDITROUND] = "Edit Points";
-modeTitle[AppMode.COURSES] = "Teams";
-modeTitle[AppMode.FLOATINGBUTTON] = "FloatingButton";
+modeTitle[AppMode.LOGIN] = "Network Authentication";
+modeTitle[AppMode.HOMEPAGE] = "Access Granted";
+modeTitle[AppMode.TWOFACTOR] = "SMS Authentication";
 
 const modeToPage = {};
 modeToPage[AppMode.LOGIN] = LoginPage;
-modeToPage[AppMode.FEED] = FeedPage;
-modeToPage[AppMode.ROUNDS] = Rounds;
-modeToPage[AppMode.ROUNDS_LOGROUND] = Rounds;
-modeToPage[AppMode.ROUNDS_EDITROUND] = Rounds;
-modeToPage[AppMode.COURSES] = CoursesPage;
-modeToPage[AppMode.FLOATINGBUTTON] = FloatingButton;
+modeToPage[AppMode.HOMEPAGE] = HomePage;
+modeToPage[AppMode.TWOFACTOR] = twoFactor;
 
 class App extends React.Component {
 
@@ -34,7 +25,7 @@ class App extends React.Component {
     super();
     this.state = {mode: AppMode.LOGIN,
                   menuOpen: false,
-                  mode1: AppMode.ROUNDS,
+                  mode1: AppMode.TWOFACTOR,
                   userId: "",
                   showAbout: false};
   }
@@ -79,7 +70,6 @@ class App extends React.Component {
             mode={this.state.mode}
             toggleMenuOpen={this.toggleMenuOpen}
             userId={this.state.userId}
-            logRound={() => this.handleChangeMode(AppMode.ROUNDS_LOGROUND)}
             showAbout={this.toggleAbout}
             logOut={() => this.handleChangeMode(AppMode.LOGIN)}
             />

@@ -11,34 +11,19 @@ renderModeMenuItems = () => {
     case AppMode.FEED:
       return(
         <div>
-        <a className="sidemenu-item">
-            <span className="fa fa-users"></span>&nbsp;League Teams</a>
-        <a className="sidemenu-item ">
-            <span className="fa fa-search"></span>&nbsp;Search Team</a>
+         <a className="sidemenu-item" >
+            <span className="fa fa-plus"></span>&nbsp;Button</a>
         </div>
       );
     break;
-    case AppMode.ROUNDS:
+    case AppMode.TWOFACTOR:
       return(
         <div>
-          <a className="sidemenu-item" onClick={this.props.logRound} >
-            <span className="fa fa-plus"></span>&nbsp;Add Matchups</a>
-          <a className="sidemenu-item">
-            <span className="fa fa-search"></span>&nbsp;Search Matchup</a>
+          <a className="sidemenu-item" >
+            <span className="fa fa-plus"></span>&nbsp;Button</a>
         </div>
       );
     break;
-    case AppMode.COURSES:
-      return(
-        <div>
-        <a className="sidemenu-item">
-            <span className="fa fa-plus"></span>&nbsp;Player Injuries</a>
-        <a className="sidemenu-item">
-            <span className="fa fa-search"></span>&nbsp;Search Teams</a>
-            <a className="sidemenu-item">
-            <span className="fa fa-search"></span>&nbsp;Search Playesr</a>
-        </div>
-      );
     default:
         return null;
     }

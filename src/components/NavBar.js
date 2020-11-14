@@ -21,7 +21,7 @@ class NavBar extends React.Component {
     }
   }
 
-    
+  //The img here is for the Icon that appears on the top left corner. 
   render() {
     return (
     <div className="navbar">  
@@ -30,7 +30,7 @@ class NavBar extends React.Component {
         <span id="menuBtnIcon" className={"sidemenu-btn-icon " + this.getMenuBtnIcon()}>
         </span>
       </button>
-      <img src="https://image.shutterstock.com/image-vector/fantasy-football-logo-600w-1129431107.jpg" alt="Speed Score Logo" height="38px"
+      <img src="https://canestrinilex.com/assets/Uploads/blog-pics/f613404b87/Topsecretsidebar__ScaleWidthWzcwMF0.jpg" alt="Speed Score Logo" height="38px"
       width="38px" />
       <span className="navbar-title">
         &nbsp;{this.props.title}
