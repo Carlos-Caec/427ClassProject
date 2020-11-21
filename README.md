@@ -1,6 +1,4 @@
-The project works but i had trouble deploying and it still hasent showed up on the webpage.
+Carlos Martinez  # ia7_Carlos_Caec
 
-Carlos Martinez
-ia5-Carlos_Caec
-
-
+deployment
+http://ai7caec.us-west-2.elasticbeanstalk.com/
