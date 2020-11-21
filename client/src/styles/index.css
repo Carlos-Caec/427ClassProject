@@ -242,7 +242,18 @@ border-radius:50px;
 text-align:center;
 box-shadow: 2px 2px 3px #999;
 }
-
+.logOut-Btn {
+  position:fixed;
+  cursor: pointer;
+  width:100px;
+  height:30px;
+  bottom:60px;
+  right:40px;
+  background-color:#000000;
+  color:white;
+  text-align: center;
+  box-shadow: 2px 2px 3px #999;
+}
 .floatbtn-icon{
 margin-top:22px;
 }
@@ -282,7 +293,7 @@ font-size: 24px;
 }
 
 .login-btn {
-width: 70%;
+width: 40%;
 font-size: 36px;
 }
 

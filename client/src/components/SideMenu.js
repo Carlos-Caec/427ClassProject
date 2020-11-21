@@ -8,7 +8,7 @@ class SideMenu extends React.Component {
 //determine mode.
 renderModeMenuItems = () => {
   switch (this.props.mode) {
-    case AppMode.FEED:
+    case AppMode.HOMEPAGE:
       return(
         <div>
          <a className="sidemenu-item" >
@@ -16,7 +16,7 @@ renderModeMenuItems = () => {
         </div>
       );
     break;
-    case AppMode.TWOFACTOR:
+    case AppMode.HOMEPAGE:
       return(
         <div>
           <a className="sidemenu-item" >

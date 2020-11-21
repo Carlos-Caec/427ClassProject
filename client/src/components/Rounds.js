@@ -17,23 +17,6 @@ class Rounds extends React.Component {
                       editId: ""};           
     }
 
-    //componentDidMount -- After the component moutns, obtain current user's 
-    //rounds from the server and push them into component state
-    // componentDidMount = async () => {
-    //     let url = "/rounds/" + this.props.userObj.id;
-    //     let res = await fetch(url, {method: 'GET'});
-    //     if (res.status != 200) {
-    //         let msg = await res.text();
-    //         alert("There was an error obtaining rounds data for this user: " 
-    //         + msg);
-    //         return;
-    //     } 
-    //     let body = await res.json();
-    //     body = JSON.parse(body);
-    //     alert("in componentDidMount with GET results: " + body);
-    //     this.setState({rounds: body}, this.props.changeMode(AppMode.ROUNDS));
-    // }
-
     //addRound -- Given an object newData containing a new round, use the 
     //server POST route to add the new round to the database. If the add is
     //successful, call on the refreshOnUpdate() method to force the parent
