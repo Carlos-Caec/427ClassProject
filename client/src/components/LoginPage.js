@@ -15,10 +15,6 @@ constructor() {
                   loginBtnLabel: "Log In",
                   showCreateAccountDialog: false,
                   showResetPasswordDialog: false,
-                  githubIcon: "fa fa-github",
-                  githubLabel: "Sign in with GitHub",
-                  googleIcon: "fa fa-google",
-                  googleLabel: "Sign in with Google",
                   loginMsg: ""
                   };
 } 
@@ -27,18 +23,6 @@ constructor() {
 componentDidMount() {
     this.emailInputRef.current.focus();
 }  
-
-//handleLogin -- Callback function that sets up initial app state upon login.
-//handleLogin = () => {
-    //Stop spinner
-//    this.setState({loginBtnIcon: "fa fa-sign-in",
- //                  loginBtnLabel: "Log In"});
-    //Set current user
-    //this.props.setUserId(this.emailInputRef.current.value);
-    //Trigger switch to FEED mode (default app landing page)
-    //this.props.changeMode(AppMode.FEED);
-//}
-
 
 //handleLoginSubmit -- Called when user clicks on login button.
 handleLoginSubmit = async (event) => {

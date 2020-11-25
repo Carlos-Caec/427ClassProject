@@ -61,6 +61,7 @@ roundSchema.virtual('SGS').get(function() {
 const userSchema = new Schema({
   id: String, //unique identifier for user
   password: String,
+  PhoneNumber: String, //Phone Number for SMS authentication
   displayName: String, //Name to be displayed within app
   authStrategy: String, //strategy used to authenticate, e.g., github, local
   profilePicURL: String, //link to profile image
@@ -157,7 +158,7 @@ passport.deserializeUser(async (userId, done) => {
 //to a cookie, and initializes a passport object to support OAuth.
 /////////////////////////////////////////////////////////////////////////
 app
-  .use(session({secret: "speedgolf", 
+  .use(session({secret: "Project427", 
                 resave: false,
                 saveUninitialized: false,
                 cookie: {maxAge: 1000 * 60}}))
@@ -264,13 +265,15 @@ app.post('/users/:userId',  async (req, res, next) => {
     " and body = " + JSON.stringify(req.body));  
   if (req.body === undefined ||
       !req.body.hasOwnProperty("password") || 
+      !req.body.hasOwnProperty("PhoneNumber") ||
       !req.body.hasOwnProperty("displayName") ||
       !req.body.hasOwnProperty("profilePicURL") ||
       !req.body.hasOwnProperty("securityQuestion") ||
-      !req.body.hasOwnProperty("securityAnswer")) {
+      !req.body.hasOwnProperty("securityAnswer")
+      ) {
     //Body does not contain correct properties
     return res.status(400).send("/users POST request formulated incorrectly. " + 
-      "It must contain 'password','displayName','profilePicURL','securityQuestion' and 'securityAnswer fields in message body.")
+      "It must contain 'password', 'PhoneNumber' ,'displayName','profilePicURL', 'securityQuestion' and 'securityAnswer fields in message body.")
   }
   try {
     let thisUser = await User.findOne({id: req.params.userId});
@@ -281,6 +284,7 @@ app.post('/users/:userId',  async (req, res, next) => {
       thisUser = await new User({
         id: req.params.userId,
         password: req.body.password,
+        PhoneNumber: req.body.PhoneNumber,
         displayName: req.body.displayName,
         authStrategy: 'local',
         profilePicURL: req.body.profilePicURL,
@@ -304,13 +308,13 @@ app.put('/users/:userId',  async (req, res, next) => {
     return res.status(400).send("users/ PUT request formulated incorrectly." +
         "It must contain 'userId' as parameter.");
   }
-  const validProps = ['password', 'displayName', 'profilePicURL', 
+  const validProps = ['password', 'PhoneNumber','displayName', 'profilePicURL', 
     'securityQuestion', 'securityAnswer'];
   for (const bodyProp in req.body) {
     if (!validProps.includes(bodyProp)) {
       return res.status(400).send("users/ PUT request formulated incorrectly." +
         "Only the following props are allowed in body: " +
-        "'password', 'displayname', 'profilePicURL', 'securityQuestion', 'securityAnswer'");
+        "'password','PhoneNumber',  'displayname', 'profilePicURL', 'securityQuestion', 'securityAnswer'");
     } 
   }
   try {

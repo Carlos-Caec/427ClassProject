@@ -154,6 +154,19 @@ class CreateEditAccountDialog extends React.Component {
                 />
             </label>
             <label>
+                Phone Number:
+                <input
+                className="form-control form-text form-center"
+                name="phoneNumber"
+                type="text"
+                size="30"
+                placeholder="Phone Number"
+                required={true}
+                value={this.state.PhoneNumber}
+                onChange={this.handleNewAccountChange}
+                />
+            </label>
+            <label>
                 Display Name:
                 <input
                 className="form-control form-text form-center"

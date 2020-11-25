@@ -38,7 +38,8 @@ class App extends React.Component {
             this.setState({
               userObj: obj.user,
               authenticated: true,
-              mode: AppMode.TWOFACTOR //We're authenticated so can get into the app.
+              mode: AppMode.TWOFACTOR //Username and password was authenticated so can get into SMS authentication.
+              //after this step i need to verify with SMS and then change mode to mode: AppMode.HOMEPAGE if authentication succesful.
             });
           }
         }
