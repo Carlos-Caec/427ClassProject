@@ -7,7 +7,10 @@ class twoFactor extends React.Component {
         //Create a ref for the email input DOM element
        this.emailInputRef = React.createRef();
         this.state = {
-            SMScode: "0",
+            SMScode: "",accountCreateMsg: "",
+            loginBtnIcon: "fa fa-sign-in",
+            loginBtnLabel: "Log In",
+            loginMsg: ""
         }
       }
 
@@ -17,11 +20,30 @@ class twoFactor extends React.Component {
         this.setState({[name]: event.target.value});
     
        
-    } */
+    } 
     handleSubmitCode = () => {
         console.log(this.state.SMScode);
         
     }
+    */
+    //handleLoginSubmit -- Called when user clicks on login button.
+    handleSubmitCode = async (event) => {
+    event.preventDefault();
+    console.log(this.state.SMScode);
+    /* this.setState({loginBtnIcon: "fa fa-spin fa-spinner",
+                   loginBtnLabel: "Logging In..."});
+    const url = "auth/login?username=" + this.emailInputRef.current.value +
+                "&password=" + this.passwordInputRef.current.value;
+    const res = await fetch(url, {method: 'POST'}); 
+    if (res.status == 200) { //successful login!
+        window.open("/","_self");
+    } else { //Unsuccessful login
+      const resText = await res.text();
+      this.setState({loginBtnIcon: "fa fa-sign-in",
+                     loginBtnLabel: "Log In",
+                     loginMsg: resText});
+    } */
+}
     handleSendCode = () => {
         alert("inside send code");
     }

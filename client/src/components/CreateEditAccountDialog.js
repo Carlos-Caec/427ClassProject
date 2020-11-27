@@ -9,10 +9,11 @@ class CreateEditAccountDialog extends React.Component {
         this.repeatPassRef = React.createRef();
         this.profilePicRef = React.createRef();
         this.state = {accountName: "",
-                      displayName: "",
+                      displayName: "",                      
                       profilePicURL: "https://icon-library.net//images/default-profile-icon/default-profile-icon-24.jpg",
                       accountPassword: "",
                       accountPasswordRepeat: "",
+                      accountPhoneNumber: "",
                       accountSecurityQuestion: "",
                       accountSecurityAnswer: ""};
 
@@ -73,6 +74,7 @@ class CreateEditAccountDialog extends React.Component {
         const accountInfo = {
             displayName: this.state.displayName,
             password: this.state.accountPassword,
+            phoneNumber: this.state.accountPhoneNumber,
             profilePicURL: this.state.profilePicURL,
             securityQuestion: this.state.accountSecurityQuestion,
             securityAnswer: this.state.accountSecurityAnswer,
@@ -157,12 +159,12 @@ class CreateEditAccountDialog extends React.Component {
                 Phone Number:
                 <input
                 className="form-control form-text form-center"
-                name="phoneNumber"
+                name="accountPhoneNumber"
                 type="text"
                 size="30"
                 placeholder="Phone Number"
                 required={true}
-                value={this.state.PhoneNumber}
+                value={this.state.accountPhoneNumber}
                 onChange={this.handleNewAccountChange}
                 />
             </label>

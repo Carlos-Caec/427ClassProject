@@ -32,43 +32,18 @@ mongoose.connect(connectStr, {useNewUrlParser: true, useUnifiedTopology: true})
     err => {console.error(`Error connecting to ${connectStr}: ${err}`)}
   );
 
-const Schema = mongoose.Schema;
-const roundSchema = new Schema({
-  date: {type: Date, required: true},
-  course: {type: String, required: true},
-  type: {type: String, required: true, enum: ['practice','tournament']},
-  holes: {type: Number, required: true, min: 1, max: 18},
-  strokes: {type: Number, required: true, min: 1, max: 300},
-  minutes: {type: Number, required: true, min: 1, max: 240},
-  seconds: {type: Number, required: true, min: 0, max: 60},
-  notes: {type: String, required: true}
-},
-{
-  toObject: {
-  virtuals: true
-  },
-  toJSON: {
-  virtuals: true 
-  }
-});
-
-roundSchema.virtual('SGS').get(function() {
-  return (this.strokes * 60) + (this.minutes * 60) + this.seconds;
-});
-
 //Define schema that maps to a document in the Users collection in the appdb
 //database.
 const userSchema = new Schema({
   id: String, //unique identifier for user
   password: String,
-  PhoneNumber: String, //Phone Number for SMS authentication
+  phoneNumber: String, //Phone Number for SMS authentication
   displayName: String, //Name to be displayed within app
   authStrategy: String, //strategy used to authenticate, e.g., github, local
   profilePicURL: String, //link to profile image
   securityQuestion: String,
   securityAnswer: {type: String, required: function() 
-    {return this.securityQuestion ? true: false}},
-  rounds: [roundSchema]
+    {return this.securityQuestion ? true: false}}
 });
 const User = mongoose.model("User",userSchema); 
 
@@ -93,6 +68,7 @@ passport.use(new GithubStrategy({
         currentUser = await new User({
         id: userId,
         displayName: profile.displayName,
+        phoneNumber: profile.phoneNumber,
         authStrategy: profile.provider,
         profilePicURL: profile.photos[0].value,
         rounds: []
@@ -239,7 +215,6 @@ app.post('/auth/login',
 //USER ACCOUNT MANAGEMENT ROUTES
 ////////////////////////////////
 
-
 //READ user route: Retrieves the user with the specified userId from users collection (GET)
 app.get('/users/:userId', async(req, res, next) => {
   console.log("in /users route (GET) with userId = " + 
@@ -265,7 +240,7 @@ app.post('/users/:userId',  async (req, res, next) => {
     " and body = " + JSON.stringify(req.body));  
   if (req.body === undefined ||
       !req.body.hasOwnProperty("password") || 
-      !req.body.hasOwnProperty("PhoneNumber") ||
+      !req.body.hasOwnProperty("phoneNumber") ||
       !req.body.hasOwnProperty("displayName") ||
       !req.body.hasOwnProperty("profilePicURL") ||
       !req.body.hasOwnProperty("securityQuestion") ||
@@ -273,7 +248,7 @@ app.post('/users/:userId',  async (req, res, next) => {
       ) {
     //Body does not contain correct properties
     return res.status(400).send("/users POST request formulated incorrectly. " + 
-      "It must contain 'password', 'PhoneNumber' ,'displayName','profilePicURL', 'securityQuestion' and 'securityAnswer fields in message body.")
+      "It must contain 'password', 'phoneNumber' ,'displayName','profilePicURL', 'securityQuestion' and 'securityAnswer fields in message body.")
   }
   try {
     let thisUser = await User.findOne({id: req.params.userId});
@@ -282,9 +257,10 @@ app.post('/users/:userId',  async (req, res, next) => {
         req.params.userId + "'.");
     } else { //account available -- add to database
       thisUser = await new User({
+        type: req.body.type,
         id: req.params.userId,
         password: req.body.password,
-        PhoneNumber: req.body.PhoneNumber,
+        phoneNumber: req.body.phoneNumber,
         displayName: req.body.displayName,
         authStrategy: 'local',
         profilePicURL: req.body.profilePicURL,
@@ -308,13 +284,13 @@ app.put('/users/:userId',  async (req, res, next) => {
     return res.status(400).send("users/ PUT request formulated incorrectly." +
         "It must contain 'userId' as parameter.");
   }
-  const validProps = ['password', 'PhoneNumber','displayName', 'profilePicURL', 
+  const validProps = ['password', 'phoneNumber','displayName', 'profilePicURL', 
     'securityQuestion', 'securityAnswer'];
   for (const bodyProp in req.body) {
     if (!validProps.includes(bodyProp)) {
       return res.status(400).send("users/ PUT request formulated incorrectly." +
         "Only the following props are allowed in body: " +
-        "'password','PhoneNumber',  'displayname', 'profilePicURL', 'securityQuestion', 'securityAnswer'");
+        "'password','phoneNumber',  'displayname', 'profilePicURL', 'securityQuestion', 'securityAnswer'");
     } 
   }
   try {
@@ -348,121 +324,5 @@ app.delete('/users/:userId', async(req, res, next) => {
     return res.status(400).send("Unexpected error occurred when attempting to delete user account with id " +
       req.params.userId + ": " + err);
   }
-});
-
-/////////////////////////////////
-//ROUNDS ROUTES
-////////////////////////////////
-
-//CREATE round route: Adds a new round as a subdocument to 
-//a document in the users collection (POST)
-app.post('/rounds/:userId', async (req, res, next) => {
-  console.log("in /rounds (POST) route with params = " + 
-              JSON.stringify(req.params) + " and body = " + 
-              JSON.stringify(req.body));
-  if (!req.body.hasOwnProperty("date") || 
-      !req.body.hasOwnProperty("course") || 
-      !req.body.hasOwnProperty("type") ||
-      !req.body.hasOwnProperty("holes") || 
-      !req.body.hasOwnProperty("strokes") ||
-      !req.body.hasOwnProperty("minutes") ||
-      !req.body.hasOwnProperty("seconds") || 
-      !req.body.hasOwnProperty("notes")) {
-    //Body does not contain correct properties
-    return res.status(400).send("POST request on /rounds formulated incorrectly." +
-      "Body must contain all 8 required fields: date, course, type, holes, strokes, "       +  "minutes, seconds, notes.");
-  }
-  try {
-    let status = await User.updateOne(
-    {id: req.params.userId},
-    {$push: {rounds: req.body}});
-    if (status.nModified != 1) { //Should never happen!
-      res.status(400).send("Unexpected error occurred when adding round to"+
-        " database. Round was not added.");
-    } else {
-      res.status(200).send("Round successfully added to database.");
-    }
-  } catch (err) {
-    console.log(err);
-    return res.status(400).send("Unexpected error occurred when adding round" +
-     " to database: " + err);
-  } 
-});
-
-//READ round route: Returns all rounds associated 
-//with a given user in the users collection (GET)
-app.get('/rounds/:userId', async(req, res) => {
-  console.log("in /rounds route (GET) with userId = " + 
-    JSON.stringify(req.params.userId));
-  try {
-    let thisUser = await User.findOne({id: req.params.userId});
-    if (!thisUser) {
-      return res.status(400).message("No user account with specified userId was found in database.");
-    } else {
-      return res.status(200).json(JSON.stringify(thisUser.rounds));
-    }
-  } catch (err) {
-    console.log()
-    return res.status(400).message("Unexpected error occurred when looking up user in database: " + err);
-  }
-});
-
-//UPDATE round route: Updates a specific round 
-//for a given user in the users collection (PUT)
-app.put('/rounds/:userId/:roundId', async (req, res, next) => {
-  console.log("in /rounds (PUT) route with params = " + 
-              JSON.stringify(req.params) + " and body = " + 
-              JSON.stringify(req.body));
-  const validProps = ['date', 'course', 'type', 'holes', 'strokes',
-    'minutes', 'seconds', 'notes'];
-  let bodyObj = {...req.body};
-  delete bodyObj._id; //Not needed for update
-  delete bodyObj.SGS; //We'll compute this below in seconds.
-  for (const bodyProp in bodyObj) {
-    if (!validProps.includes(bodyProp)) {
-      return res.status(400).send("rounds/ PUT request formulated incorrectly." +
-        "It includes " + bodyProp + ". However, only the following props are allowed: " +
-        "'date', 'course', 'type', 'holes', 'strokes', " +
-        "'minutes', 'seconds', 'notes'");
-    } else {
-      bodyObj["rounds.$." + bodyProp] = bodyObj[bodyProp];
-      delete bodyObj[bodyProp];
-    }
-  }
-  try {
-    let status = await User.updateOne(
-      {"id": req.params.userId,
-       "rounds._id": mongoose.Types.ObjectId(req.params.roundId)}
-      ,{"$set" : bodyObj}
-    );
-    if (status.nModified != 1) {
-      res.status(400).send("Unexpected error occurred when updating round in database. Round was not updated.");
-    } else {
-      res.status(200).send("Round successfully updated in database.");
-    }
-  } catch (err) {
-    console.log(err);
-    return res.status(400).send("Unexpected error occurred when updating round in database: " + err);
-  } 
-});
-
-//DELETE round route: Deletes a specific round 
-//for a given user in the users collection (DELETE)
-app.delete('/rounds/:userId/:roundId', async (req, res, next) => {
-  console.log("in /rounds (DELETE) route with params = " + 
-              JSON.stringify(req.params)); 
-  try {
-    let status = await User.updateOne(
-      {id: req.params.userId},
-      {$pull: {rounds: {_id: mongoose.Types.ObjectId(req.params.roundId)}}});
-    if (status.nModified != 1) { //Should never happen!
-      res.status(400).send("Unexpected error occurred when deleting round from database. Round was not deleted.");
-    } else {
-      res.status(200).send("Round successfully deleted from database.");
-    }
-  } catch (err) {
-    console.log(err);
-    return res.status(400).send("Unexpected error occurred when deleting round from database: " + err);
-  } 
 });
 

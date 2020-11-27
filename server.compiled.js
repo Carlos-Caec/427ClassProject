@@ -112,6 +112,7 @@ var userSchema = new Schema({
   id: String,
   //unique identifier for user
   password: String,
+  phoneNumber: String,
   displayName: String,
   //Name to be displayed within app
   authStrategy: String,
@@ -459,12 +460,12 @@ app.post('/users/:userId', /*#__PURE__*/function () {
           case 0:
             console.log("in /users route (POST) with params = " + JSON.stringify(req.params) + " and body = " + JSON.stringify(req.body));
 
-            if (!(req.body === undefined || !req.body.hasOwnProperty("password") || !req.body.hasOwnProperty("displayName") || !req.body.hasOwnProperty("profilePicURL") || !req.body.hasOwnProperty("securityQuestion") || !req.body.hasOwnProperty("securityAnswer"))) {
+            if (!(req.body === undefined || !req.body.hasOwnProperty("password") || !req.body.hasOwnProperty("phoneNumber") ||!req.body.hasOwnProperty("displayName") || !req.body.hasOwnProperty("profilePicURL") || !req.body.hasOwnProperty("securityQuestion") || !req.body.hasOwnProperty("securityAnswer"))) {
               _context5.next = 3;
               break;
             }
 
-            return _context5.abrupt("return", res.status(400).send("/users POST request formulated incorrectly. " + "It must contain 'password','displayName','profilePicURL','securityQuestion' and 'securityAnswer fields in message body."));
+            return _context5.abrupt("return", res.status(400).send("/users POST request formulated incorrectly. " + "It must contain 'password','phoneNumber','displayName','profilePicURL','securityQuestion' and 'securityAnswer fields in message body."));
 
           case 3:
             _context5.prev = 3;
@@ -491,12 +492,12 @@ app.post('/users/:userId', /*#__PURE__*/function () {
             return new User({
               id: req.params.userId,
               password: req.body.password,
+              phoneNumber: req.body.phoneNumber,
               displayName: req.body.displayName,
               authStrategy: 'local',
               profilePicURL: req.body.profilePicURL,
               securityQuestion: req.body.securityQuestion,
-              securityAnswer: req.body.securityAnswer,
-              rounds: []
+              securityAnswer: req.body.securityAnswer
             }).save();
 
           case 13:
@@ -542,7 +543,7 @@ app.put('/users/:userId', /*#__PURE__*/function () {
             return _context6.abrupt("return", res.status(400).send("users/ PUT request formulated incorrectly." + "It must contain 'userId' as parameter."));
 
           case 3:
-            validProps = ['password', 'displayName', 'profilePicURL', 'securityQuestion', 'securityAnswer'];
+            validProps = ['password', 'phoneNumber','displayName', 'profilePicURL', 'securityQuestion', 'securityAnswer'];
             _context6.t0 = _regeneratorRuntime["default"].keys(req.body);
 
           case 5:
@@ -558,7 +559,7 @@ app.put('/users/:userId', /*#__PURE__*/function () {
               break;
             }
 
-            return _context6.abrupt("return", res.status(400).send("users/ PUT request formulated incorrectly." + "Only the following props are allowed in body: " + "'password', 'displayname', 'profilePicURL', 'securityQuestion', 'securityAnswer'"));
+            return _context6.abrupt("return", res.status(400).send("users/ PUT request formulated incorrectly." + "Only the following props are allowed in body: " + "'password','phoneNumber', 'displayname', 'profilePicURL', 'securityQuestion', 'securityAnswer'"));
 
           case 9:
             _context6.next = 5;

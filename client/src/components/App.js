@@ -35,12 +35,18 @@ class App extends React.Component {
         .then((response) => response.json())
         .then((obj) => {
           if (obj.isAuthenticated) {
+            this.setState({mode: AppMode.TWOFACTOR,
+              userObj: obj.user,
+              authenticated: true,});
+              //THIS IS WHERE I THINK I HAVE TO ADD THE 2FAC, above only redirect to 2fac then if authenticated come back and sign in
+           /*  if(obj.isAuthenticated){ 
             this.setState({
               userObj: obj.user,
               authenticated: true,
-              mode: AppMode.TWOFACTOR //Username and password was authenticated so can get into SMS authentication.
+              mode: AppMode.HOMEPAGE //Username and password was authenticated so can get into SMS authentication.
               //after this step i need to verify with SMS and then change mode to mode: AppMode.HOMEPAGE if authentication succesful.
             });
+          } */
           }
         }
       )
