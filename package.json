@@ -12,6 +12,7 @@
   "author": "Carlos Martinez",
   "license": "ISC",
   "dependencies": {
+    "aws-sdk": "^2.799.0",
     "body-parser": "^1.19.0",
     "bootstrap-social": "^5.1.1",
     "express": "^4.17.1",
@@ -21,7 +22,8 @@
     "passport-github": "^1.1.0",
     "passport-local": "^1.0.0",
     "path": "^0.12.7",
-    "regenerator-runtime": "^0.13.7"
+    "regenerator-runtime": "^0.13.7",
+    "twilio": "^3.52.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.12.1",

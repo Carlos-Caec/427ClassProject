@@ -1,5 +1,7 @@
 import React from 'react';
+import { render } from 'react-dom';
 import AppMode from './../AppMode.js';
+
 
 class twoFactor extends React.Component {
     constructor() {
@@ -7,45 +9,60 @@ class twoFactor extends React.Component {
         //Create a ref for the email input DOM element
        this.emailInputRef = React.createRef();
         this.state = {
-            SMScode: "",accountCreateMsg: "",
+            SMScode: "",
+            accountCreateMsg: "",
             loginBtnIcon: "fa fa-sign-in",
             loginBtnLabel: "Log In",
-            loginMsg: ""
+            loginMsg: "",
+            val: "",
+            random: 0
         }
       }
-
-  /*   handleChange = (event) => {
+ 
+    handleChange = (event) => {
         const name = event.target.name;
-    
         this.setState({[name]: event.target.value});
-    
-       
-    } 
-    handleSubmitCode = () => {
-        console.log(this.state.SMScode);
         
     }
-    */
     //handleLoginSubmit -- Called when user clicks on login button.
     handleSubmitCode = async (event) => {
     event.preventDefault();
-    console.log(this.state.SMScode);
-    /* this.setState({loginBtnIcon: "fa fa-spin fa-spinner",
+    //console.log(this.state.SMScode);
+     this.setState({loginBtnIcon: "fa fa-spin fa-spinner",
                    loginBtnLabel: "Logging In..."});
-    const url = "auth/login?username=" + this.emailInputRef.current.value +
-                "&password=" + this.passwordInputRef.current.value;
-    const res = await fetch(url, {method: 'POST'}); 
-    if (res.status == 200) { //successful login!
+    const num = this.SMScode.current.value;
+    if (num === num) { //successful login!
+        alert("it worked");
         window.open("/","_self");
     } else { //Unsuccessful login
-      const resText = await res.text();
+        alert("it didnt work!!");
+     /*  const resText = await res.text();
       this.setState({loginBtnIcon: "fa fa-sign-in",
                      loginBtnLabel: "Log In",
-                     loginMsg: resText});
-    } */
+                     loginMsg: resText}); */
+    } 
+
 }
     handleSendCode = () => {
+        
         alert("inside send code");
+        //need to get msg sent out to verify authntication
+        const accountSid = process.env.TWILIO_ACCOUNT_SID;
+        const authToken = process.env.TWILIO_AUTH_TOKEN;
+
+        //DONT FORGET TO ADD THE ACCESS TOKENS HERE!!!!!!!!!!!!!!***************************************************************************
+        const client = require('twilio')('TWILIO_ACCOUNT_SID', 'TWILIO_AUTH_TOKEN');
+
+        client.messages.create({
+           body: 'Your verification code is: ',
+           from: '+12056428670',
+           to: '+15099488676'
+         })
+         
+        .then(message => console.log(message.sid)); 
+        setTimeout(1000);
+        window.open(`/`,"_self");
+
     }
 
     //try adding the actual number where i have the number number displayed.
@@ -65,13 +82,13 @@ class twoFactor extends React.Component {
             <label>
                 Enter Code
                 <input
+                ref={this.SMScode}
                 className="form-control form-text form-center"
                 name="SMSCode"
                 type="SMSCode"
                 size="35"
                 placeholder="Enter Code Here"
-                required={true}                
-                onChange={this.handleChange}
+                required={true}               
                 />
             </label>
             </form>
