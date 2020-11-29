@@ -55,8 +55,8 @@ class twoFactor extends React.Component {
 
         client.messages.create({
            body: 'Your verification code is: ',
-           from: '+12056428670',
-           to: '+15099488676'
+           from: '+',
+           to: '+'
          })
          
         .then(message => console.log(message.sid)); 

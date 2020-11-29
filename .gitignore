@@ -20,6 +20,8 @@ client/yarn-debug.log*
 client/yarn-error.log*
 
 #Root directory dependencies
+/.env
+/node_modules
 /node_modules
 /.pnp
 .pnp.js
@@ -27,6 +29,7 @@ client/yarn-error.log*
 /coverage
 # production
 /build
+
 # misc
 .DS_Store
 .env.local
