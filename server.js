@@ -8,14 +8,18 @@ import passportGithub from 'passport-github';
 import passportLocal from 'passport-local';
 import session from 'express-session';
 import regeneratorRuntime from "regenerator-runtime";
+import passportGoogle from 'passport-google-oauth2'; 
+import passportGoogle from 'passport-google'; 
 import path from 'path';
 import express from 'express';
+require('dotenv').config();
 
 const LOCAL_PORT = 8081;
 const DEPLOY_URL = "http://localhost:8081";
 const PORT = process.env.HTTP_PORT || LOCAL_PORT;
 const GithubStrategy = passportGithub.Strategy;
 const LocalStrategy = passportLocal.Strategy;
+const GoogleStrategy = passportGoogle.Strategy;
 const app = express();
 
 //////////////////////////////////////////////////////////////////////////
@@ -31,6 +35,50 @@ mongoose.connect(connectStr, {useNewUrlParser: true, useUnifiedTopology: true})
     () =>  {console.log(`Connected to ${connectStr}.`)},
     err => {console.error(`Error connecting to ${connectStr}: ${err}`)}
   );
+  
+//////////////////////////////////////////////////////////////////////////
+//twilio SMS Authentication
+////////////////////////////////////////////////////////////////////
+
+const express = require('express');
+const bodyParser = require('body-parser');
+const pino = require('express-pino-logger')();
+const client = require('twilio')(
+  process.env.TWILIO_ACCOUNT_SID,
+  process.env.TWILIO_AUTH_TOKEN
+);
+
+const app = express();
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+app.use(pino);
+
+app.get('/api/greeting', (req, res) => {
+  const name = req.query.name || 'World';
+  res.setHeader('Content-Type', 'application/json');
+  res.send(JSON.stringify({ greeting: `Hello ${name}!` }));
+});
+
+app.post('/api/messages', (req, res) => {
+  res.header('Content-Type', 'application/json');
+  client.messages
+    .create({
+      from: process.env.TWILIO_PHONE_NUMBER,
+      to: req.body.to,
+      body: req.body.body
+    })
+    .then(() => {
+      res.send(JSON.stringify({ success: true }));
+    })
+    .catch(err => {
+      console.log(err);
+      res.send(JSON.stringify({ success: false }));
+    });
+});
+
+app.listen(8081, () =>
+  console.log('Express server is running on localhost:8081')
+);
 
 //Define schema that maps to a document in the Users collection in the appdb
 //database.
@@ -53,8 +101,8 @@ const User = mongoose.model("User",userSchema);
 //the 'github' strategy in passport.js.
 //////////////////////////////////////////////////////////////////////////
 passport.use(new GithubStrategy({
-    clientID: "8ddc7098f008654e1a38",
-    clientSecret: "96d41985e73c67c2b396837be9dcc5d25b9f5ed2 ",
+    clientID: process.env.GO_CLIENT_ID,
+    clientSecret: process.env.GO_CLIENT_SECRET,
     callbackURL: DEPLOY_URL + "/auth/github/callback"
   },
   //The following function is called after user authenticates with github
@@ -76,7 +124,35 @@ passport.use(new GithubStrategy({
   }
   return done(null,currentUser);
 }));
-
+passport.use(
+  new GoogleStrategy(
+    {
+      clientID: process.env.GG_CLIENT_ID,
+      clientSecret: process.env.GG_CLIENT_SECRET,
+      callbackURL: DEPLOY_URL + "/auth/google/callback",
+    },
+    //The following function is called after user authenticates with github
+    async (accessToken, refreshToken, profile, done) => {
+      console.log("User authenticated through Google! In passport callback.");
+      //Our convention is to build userId from displayName and provider
+      const userId = `${profile.sub}@${profile.provider}`;
+      //See if document with this unique userId exists in database
+      let currentUser = await User.findOne({ id: userId });
+      if (!currentUser) {
+        //Add this user to the database
+        currentUser = await new User({
+          //id: profile.displayName + "@" + profile.provider + ".com",
+          id: profile.emails[0].value,
+          displayName: profile.displayName,
+          authStrategy: profile.provider,
+          profilePicURL: profile.photos[0].value,
+          
+        }).save();
+      }
+      return done(null, currentUser);
+    }
+  )
+);
 passport.use(new LocalStrategy({passReqToCallback: true},
   //Called when user is attempting to log in with local username and password. 
   //userId contains the email address entered into the form and password
@@ -108,6 +184,7 @@ passport.use(new LocalStrategy({passReqToCallback: true},
 passport.serializeUser((user, done) => {
     console.log("In serializeUser.");
     console.log("Contents of user param: " + JSON.stringify(user));
+    
     done(null,user.id);
 });
   
@@ -118,10 +195,12 @@ passport.deserializeUser(async (userId, done) => {
   console.log("Contents of userId param: " + userId);
   let thisUser;
   try {
+  
     thisUser = await User.findOne({id: userId});
     console.log("User with id " + userId + 
       " found in DB. User object will be available in server routes as req.user.")
     done(null,thisUser);
+
   } catch (err) {
     done(err);
   }
@@ -148,53 +227,70 @@ app
 //DEFINE EXPRESS APP ROUTES
 //////////////////////////////////////////////////////////////////////////
 
-/////////////////////////
-//AUTHENTICATION ROUTES
-/////////////////////////
 
 //AUTHENTICATE route: Uses passport to authenticate with GitHub.
-//Should be accessed when user clicks on 'Login with GitHub' button on 
+//Should be accessed when user clicks on 'Login with GitHub' button on
 //Log In page.
-app.get('/auth/github', passport.authenticate('github'));
+app.get("/auth/github", passport.authenticate("github"));
 
 //CALLBACK route:  GitHub will call this route after the
 //OAuth authentication process is complete.
 //req.isAuthenticated() tells us whether authentication was successful.
-app.get('/auth/github/callback', passport.authenticate('github', { failureRedirect: '/' }),
+app.get(
+  "/auth/github/callback",
+  passport.authenticate("github", { failureRedirect: "/" }),
   (req, res) => {
-    console.log("auth/github/callback reached.")
-    res.redirect('/'); //sends user back to login screen; 
-                       //req.isAuthenticated() indicates status
+    console.log("auth/github/callback reached.");
+    res.redirect("/"); //sends user back to login screen;
+    //req.isAuthenticated() indicates status
+  }
+);
+
+app.get(
+  "/auth/google",
+  passport.authenticate("google", { scope: ["profile", "email"] })
+);
+
+app.get(
+  "/auth/google/callback",
+  passport.authenticate("google", {
+    failureRedirect: "/",
+  }),
+  (req, res) => {
+    console.log("auth/google/callback reached.");
+    res.redirect("/"); //sends user back to login screen;
+    //req.isAuthenticated() indicates status
   }
 );
 
 //LOGOUT route: Use passport's req.logout() method to log the user out and
 //redirect the user to the main app page. req.isAuthenticated() is toggled to false.
-app.get('/auth/logout', (req, res) => {
-    console.log('/auth/logout reached. Logging out');
-    req.logout();
-    res.redirect('/');
+app.get("/auth/logout", (req, res) => {
+  console.log("/auth/logout reached. Logging out");
+  req.logout();
+  res.redirect("/");
 });
 
 //TEST route: Tests whether user was successfully authenticated.
 //Should be called from the React.js client to set up app state.
-app.get('/auth/test', (req, res) => {
-    console.log("auth/test reached.");
-    const isAuth = req.isAuthenticated();
-    if (isAuth) {
-        console.log("User is authenticated");
-        console.log("User record tied to session: " + JSON.stringify(req.user));
-    } else {
-        //User is not authenticated
-        console.log("User is not authenticated");
-    }
-    //Return JSON object to client with results.
-    res.json({isAuthenticated: isAuth, user: req.user});
+app.get("/auth/test", (req, res) => {
+  console.log("auth/test reached.");
+  const isAuth = req.isAuthenticated();
+  if (isAuth) {
+    console.log("User is authenticated");
+    console.log("User record tied to session: " + JSON.stringify(req.user));
+  } else {
+    //User is not authenticated
+    console.log("User is not authenticated");
+  }
+  //Return JSON object to client with results.
+  res.json({ isAuthenticated: isAuth, user: req.user });
 });
 
 //LOGIN route: Attempts to log in user using local strategy
-app.post('/auth/login', 
-  passport.authenticate('local', { failWithError: true }),
+app.post(
+  "/auth/login",
+  passport.authenticate("local", { failWithError: true }),
   (req, res) => {
     console.log("/login route reached: successful authentication.");
     //Redirect to app's main page; the /auth/test route should return true
@@ -206,10 +302,15 @@ app.post('/auth/login',
       console.log("req.authError: " + req.authError);
       res.status(401).send(req.authError);
     } else {
-      res.status(401).send("Unexpected error occurred when attempting to authenticate. Please try again.");
+      res
+        .status(401)
+        .send(
+          "Unexpected error occurred when attempting to authenticate. Please try again."
+        );
     }
     //Note: Do NOT redirect! Client will take over.
-  });
+  }
+);
 
 /////////////////////////////////
 //USER ACCOUNT MANAGEMENT ROUTES
