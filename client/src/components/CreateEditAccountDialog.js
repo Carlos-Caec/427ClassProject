@@ -35,6 +35,9 @@ class CreateEditAccountDialog extends React.Component {
         }
     }
 
+    //function to check if the password matches criteria, sanitation.
+
+
     //handleNewAccountChange--Called when a field in a dialog box form changes.
     handleNewAccountChange = (event) => {
         if (event.target.name === "profilePic") {
@@ -102,16 +105,17 @@ class CreateEditAccountDialog extends React.Component {
         <div className="modal-content">
             <div className="modal-header">
             <center>
-            <h3 className="modal-title"><b>Create New Account</b></h3>
+            <h3 className="modal-title"><b>New Account</b></h3>
             </center>
             <button className="close" 
                 onClick={this.props.cancelCreateAccount}>
                 &times;</button>
             </div>
+            <p>* Required</p>
             <div className="modal-body">
             <form onSubmit={this.handleCreateAccount}>
             <label>
-                Email: 
+                *Email: 
                 <input
                 className="form-control form-text form-center"
                 name="accountName"
@@ -127,22 +131,21 @@ class CreateEditAccountDialog extends React.Component {
                 />
             </label>
             <label>
-                Password:
+                *Password: Must contain 10 characters 
                 <input
                 className="form-control form-text form-center"
                 name="accountPassword"
                 type="password"
                 size="35"
                 placeholder="Enter Password"
-                pattern=
-                "(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$"
+                pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z])(?=(?:.*[@#$%^?])).{10,}$"
                 required={true}
                 value={this.state.accountPassword}
                 onChange={this.handleNewAccountChange}
                 />
             </label>
             <label>
-                Repeat Password:
+                *Repeat Password:
                 <input
                 className="form-control form-text form-center"
                 name="accountPasswordRepeat"
@@ -156,26 +159,27 @@ class CreateEditAccountDialog extends React.Component {
                 />
             </label>
             <label>
-                Phone Number:
+                *Phone Number:
                 <input
                 className="form-control form-text form-center"
                 name="accountPhoneNumber"
                 type="text"
                 size="30"
-                placeholder="Phone Number"
+                placeholder="1 000 000 0000"
                 required={true}
                 value={this.state.accountPhoneNumber}
                 onChange={this.handleNewAccountChange}
                 />
             </label>
+            <br/>
             <label>
-                Display Name:
+                *Username:
                 <input
                 className="form-control form-text form-center"
                 name="displayName"
                 type="text"
                 size="30"
-                placeholder="Display Name"
+                placeholder="Username"
                 required={true}
                 value={this.state.displayName}
                 onChange={this.handleNewAccountChange}
@@ -195,36 +199,7 @@ class CreateEditAccountDialog extends React.Component {
                 <img src={this.state.profilePicURL} 
                         height="60" width="60" />
             </label> 
-            <label>
-                Security Question:
-                <textarea
-                className="form-control form-text form-center"
-                name="accountSecurityQuestion"
-                size="35"
-                placeholder="Security Question"
-                rows="2"
-                cols="35"
-                maxLength="100"
-                required={true}
-                value={this.state.accountSecurityQuestion}
-                onChange={this.handleNewAccountChange}
-                />
-            </label>
-            <label>
-                Answer to Security Question:
-                <textarea
-                className="form-control form-text form-center"
-                name="accountSecurityAnswer"
-                type="text"
-                placeholder="Answer"
-                rows="2"
-                cols="35"
-                maxLength="100"
-                required={true}
-                value={this.state.accountSecurityAnswer}
-                onChange={this.handleNewAccountChange}
-                />
-            </label>
+           
             <br/>
             <button role="submit" 
                 className="btn btn-primary btn-color-theme modal-submit-btn">

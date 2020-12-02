@@ -142,7 +142,10 @@ text-align: center;
       background-color: #000000;
       color: white;
   }
-  
+  .btn2-color-theme {
+    background-color: #292929;
+    color: white;
+}
 /* The color theme when a bottom bar menu item is selected */
 .btn-alt-color-theme {
       background-color: #F0F0F0;
@@ -165,7 +168,11 @@ color: gray;
 .padded-page {
   
 padding: 56px 8px 0px 8px;
-
+box-shadow: 0 12px 24px 0 rgba(0, 0, 0, 0.2);
+  max-width: 700px;
+  margin: auto;
+  text-align: center;
+  font-family: arial;
 }
 
 .hide {
@@ -180,7 +187,7 @@ cursor: pointer;
 
 /* Styling for mode bar at the bottom of the page */
 .modebar {
-background-color: #000000;
+background-color: #717171;
 overflow: hidden;
 position: fixed;
 bottom: 0;
@@ -193,7 +200,7 @@ z-index: 100;
 display: block;
 float: left;
 width: 32%;
-color: white;
+color: 717171;
 text-align: center;
 padding: 2px 2px;
 text-decoration: none;
@@ -202,13 +209,13 @@ font-size: 17px;
 
 /* Add a gray background color to the button when it is selected */
 .modebar a:active {
-background-color: #F0F0F0;
-color: #13294E;
+background-color: #717171;
+color: #717171;
 }
 
 /* Add a gray background color to button when it is hovered */
 .modebar a:hover {
-  color: #F0F0F0;
+  color: #717171;
 }
 
 /* Hide the link that should open and close the navbar on small screens */
@@ -354,6 +361,7 @@ text-align: center;
     padding: 2px 16px;
     background-color: black;
     color: white;
+    text-align: center;
   }
   
   .modal-title {
@@ -361,6 +369,7 @@ text-align: center;
     padding: 2px 16px;
     background-color: black;
     color: white; 
+    text-align: center;
   }
   
   .modal-body {padding: 2px 16px;}

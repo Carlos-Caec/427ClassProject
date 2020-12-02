@@ -52,10 +52,12 @@ handleLoginSubmit = async (event) => {
 
   //cancelCreateAccount -- Called by child CreateAccountDialog componenet when user decides
   //to cancel creation of new account by clicking the "X" in top-right of dialog.
-  cancelCreateAccount = () => {
+  showResetPasswordDialog = () => {
       this.setState({showCreateAccountDialog: false});
   }
-
+  cancelCreateAccount = () => {
+    this.setState({showCreateAccountDialog: false});
+}
 //handleOAuthLogin -- Callback function that initiates contact with OAuth
 //provider
 handleOAuthLogin = (provider) => {
@@ -75,7 +77,11 @@ handleOAuthLoginClick = (provider) => {
   render() {
     return(
         <div id="login-mode-div" className="padded-page">
+             <br />
+            <br />
         <center>
+        <img src={"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRP2LAcD7cotvQybIVkSQ4AXrBlAHKrdiukGA&usqp=CAU"} height='200' width='200' />
+            <br />
             <h1 />
             {this.state.accountCreateMsg != "" ? <p className="emphasis">{this.state.accountCreateMsg}</p> : null}
             {this.state.loginMsg != "" ? <p className="emphasis">{this.state.loginMsg}</p> : null}
@@ -89,6 +95,7 @@ handleOAuthLoginClick = (provider) => {
                 placeholder="Enter Email Address"
                 id="emailInput"
                 pattern="[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}"
+                
                 required={true}
                 />
             </label>
@@ -112,20 +119,21 @@ handleOAuthLoginClick = (provider) => {
                 &nbsp;{this.state.loginBtnLabel}
             </button>
             <p>
-            <button type="button" className="btn btn-link login-link" 
+            <br />
+            <br />
+            <button type="button" className="btn2-color-theme btn btn-link login-link" 
                     onClick={() => {this.setState({showCreateAccountDialog: true});}}>
-                Create an account</button> 
-                <br />
-                <br />
+                No account? Create one!</button>      
             <p>
-                <i>Need help signing in?</i>
+            <button type="button" className="btn btn-link login-link"
+                        >Need help signing in?</button>
             </p>
                 <button type="button" className="btn btn-link login-link"
                         onClick={() => {this.setState({showResetPasswordDialog: true});}}>
                 Reset your password</button>
-            </p>  
-            <p>
-            <i>Version 2.0</i>
+                <br />
+            <i>Version 2.1 CPTS_427 Project Demo</i>
+            <br />
             </p>
             </form>
             {this.state.showCreateAccountDialog ? 
@@ -133,7 +141,12 @@ handleOAuthLoginClick = (provider) => {
                 accountCreateStatus={this.accountCreateStatus}
                 cancelCreateAccount={this.cancelCreateAccount} /> : null}
             {this.state.showResetPasswordDialog ? <ResetPasswordDialog /> : null}
+           
         </center>
+        <br/>
+          <br/>
+          <br/>
+          
         </div>
         )
     }

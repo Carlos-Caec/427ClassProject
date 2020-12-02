@@ -1,5 +1,6 @@
 import React from 'react';
 import AppMode from './../AppMode.js'
+import App from './App.js';
 
 class SideMenu extends React.Component {
 
@@ -12,7 +13,7 @@ renderModeMenuItems = () => {
       return(
         <div>
          <a className="sidemenu-item" >
-            <span className="fa fa-plus"></span>&nbsp;Button</a>
+            <span ></span>&nbsp;Account</a>
         </div>
       );
     break;
@@ -35,8 +36,8 @@ renderModeMenuItems = () => {
              onClick={this.props.toggleMenuOpen}>
           {/* SIDE MENU TITLE */}
           <div className="sidemenu-title">
-              <img src='https://media-exp1.licdn.com/dms/image/C5603AQEWMnL0q7LblQ/profile-displayphoto-shrink_200_200/0?e=1608163200&v=beta&t=11nEmz-HVGJXV1E-b-y043HwzWlR9Ey2R6WLSfgEtxg' height='50' width='50' />
-              <span id="userID" className="sidemenu-userID">&nbsp;{this.props.userId}</span>
+              <img src={this.props.profilePicURL} height='60' width='60' />
+              <span id="userID" className="sidemenu-userID">&nbsp;{this.props.displayName}</span>
           </div>
           {/* MENU CONTENT */}
           {this.renderModeMenuItems()}

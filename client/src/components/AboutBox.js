@@ -14,8 +14,8 @@ class AboutBox extends React.Component {
           </div>
           <div className="modal-body">
           <center>
-          <h1 >Classified</h1>
-          <h2>Access to files.</h2>
+          <h1 >Two factor Authorization</h1>
+          <h2>This app demonstrates how 2 factor authentication is helpful for accessing to files securly.</h2>
           <img src="https://canestrinilex.com/assets/Uploads/blog-pics/f613404b87/Topsecretsidebar__ScaleWidthWzcwMF0.jpg" 
            height="200" width="200"/>
           <p style={{fontStyle: "italic"}}>Version 1.0 Class Project CPTS_427</p>

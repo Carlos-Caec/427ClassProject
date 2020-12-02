@@ -1,7 +1,7 @@
 import React from 'react';
-import { render } from 'react-dom';
-import AppMode from './../AppMode.js';
-
+import { async } from 'regenerator-runtime';
+import AppMode from './../AppMode.js'
+import App from './App.js';
 
 class twoFactor extends React.Component {
     constructor() {
@@ -15,7 +15,12 @@ class twoFactor extends React.Component {
             loginBtnLabel: "Log In",
             loginMsg: "",
             val: "",
-            random: 0
+            random: 0,
+            message:{
+            recipient: "",
+            textmessage: ""
+            }
+
         }
       }
  
@@ -24,47 +29,50 @@ class twoFactor extends React.Component {
         this.setState({[name]: event.target.value});
         
     }
+    
     //handleLoginSubmit -- Called when user clicks on login button.
-    handleSubmitCode = async (event) => {
+    handleSubmitCode = (event) => {
     event.preventDefault();
-    //console.log(this.state.SMScode);
      this.setState({loginBtnIcon: "fa fa-spin fa-spinner",
                    loginBtnLabel: "Logging In..."});
-    const num = this.SMScode.current.value;
-    if (num === num) { //successful login!
-        alert("it worked");
-        window.open("/","_self");
-    } else { //Unsuccessful login
-        alert("it didnt work!!");
-     /*  const resText = await res.text();
-      this.setState({loginBtnIcon: "fa fa-sign-in",
-                     loginBtnLabel: "Log In",
-                     loginMsg: resText}); */
-    } 
-
-}
-    handleSendCode = () => {
-        
-        alert("inside send code");
-        //need to get msg sent out to verify authntication
-        const accountSid = process.env.TWILIO_ACCOUNT_SID;
-        const authToken = process.env.TWILIO_AUTH_TOKEN;
-
-        //DONT FORGET TO ADD THE ACCESS TOKENS HERE!!!!!!!!!!!!!!***************************************************************************
-        const client = require('twilio')('TWILIO_ACCOUNT_SID', 'TWILIO_AUTH_TOKEN');
-
-        client.messages.create({
-           body: 'Your verification code is: ',
-           from: '+',
-           to: '+'
-         })
-         
-        .then(message => console.log(message.sid)); 
-        setTimeout(1000);
-        window.open(`/`,"_self");
-
+     setTimeout(1000);    
+     this.props.changeMode(AppMode.HOMEPAGE);
     }
+   
+    sendText= (event) => {
+    event.preventDefault();
+    this.setState({ submitting: true });
 
+    //this.setState({message:{...this.state.message}})
+    //this.props.phoneNumber=this.state.message.recipient;
+    //value=this.state.message.textmessage;
+    fetch('/api/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(this.state.message)
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          this.setState({
+            error: false,
+            submitting: false,
+            message: {
+              recipient: this.props.phoneNumber,
+              body: "004732"
+            }
+          });
+        } else {
+          this.setState({
+            error: true,
+            submitting: false
+          });
+        }
+      });
+             }
+              
     //try adding the actual number where i have the number number displayed.
     render() {
         return(
@@ -76,7 +84,8 @@ class twoFactor extends React.Component {
             <img src="https://image.freepik.com/free-vector/2fa-icon-password-secure-login-authentication-verification-sms-push-code-messages-symbol-smartphone-mobile-phone-flat-isolated-pictogram_101884-953.jpg" 
              height="300" width="400"/>
 
-             <h2> (+1 XXX-XXX-8181)</h2>
+             <h2> ({this.props.phoneNumber})</h2>
+             <span>&nbsp;</span>
              
               <form onSubmit={this.handleSubmitCode}>
             <label>
@@ -94,15 +103,17 @@ class twoFactor extends React.Component {
             </form>
             <button type="submit" 
                 className="btn btn-primary btn-color-theme modal-submit-btn"
-                onClick={this.handleSendCode}>
+                onClick={this.sendText}>
                 <span className="fa fa-user-plus"></span>&nbsp;Send Code
             </button>
-            <p>option to not challenge after a given time.</p>
-
+            
             </center>
             <a id="logOutBtn" className="logOut-Btn"
                onClick={this.props.logOut}>
               <span className="floatbtn-icon"></span>&nbsp;Cancel</a>
+              <br/>
+          <br/>
+          <br/>
         </div>
         )
     }

@@ -9,7 +9,7 @@ import twoFactor from './twoFactor.js';
 
 const modeTitle = {};
 modeTitle[AppMode.LOGIN] = "Network Authentication";
-modeTitle[AppMode.HOMEPAGE] = "Access Granted";
+modeTitle[AppMode.HOMEPAGE] = "Welcome Back!!";
 modeTitle[AppMode.TWOFACTOR] = "SMS Authentication";
 
 const modeToPage = {};
@@ -24,6 +24,10 @@ class App extends React.Component {
     this.state = {mode: AppMode.LOGIN,
                   menuOpen: false,
                   mode1: AppMode.TWOFACTOR,
+                  authenticated: false,
+                  userObj: {displayName: "", profilePicURL: ""},
+                  editAccount: false,
+                  showEditAccountDialog: false,
                   userId: "",
                   showAbout: false};
   }
@@ -35,18 +39,11 @@ class App extends React.Component {
         .then((response) => response.json())
         .then((obj) => {
           if (obj.isAuthenticated) {
-            this.setState({mode: AppMode.TWOFACTOR,
-              userObj: obj.user,
-              authenticated: true,});
-              //THIS IS WHERE I THINK I HAVE TO ADD THE 2FAC, above only redirect to 2fac then if authenticated come back and sign in
-           /*  if(obj.isAuthenticated){ 
             this.setState({
               userObj: obj.user,
               authenticated: true,
-              mode: AppMode.HOMEPAGE //Username and password was authenticated so can get into SMS authentication.
-              //after this step i need to verify with SMS and then change mode to mode: AppMode.HOMEPAGE if authentication succesful.
+              mode: AppMode.TWOFACTOR
             });
-          } */
           }
         }
       )
@@ -90,9 +87,13 @@ class App extends React.Component {
   }
 
   setUserId = (Id) => {
-    this.setState({userId: Id});
+    this.setState({userId: Id,
+                   authenticated: true});
   }
 
+  setUserObjType = (newType) => {
+    this.setState({userObj: newType});
+  }
   render() {
     const ModePage = modeToPage[this.state.mode];
     return (
@@ -109,16 +110,22 @@ class App extends React.Component {
             menuOpen = {this.state.menuOpen}
             mode={this.state.mode}
             toggleMenuOpen={this.toggleMenuOpen}
-            userId={this.state.userId}
+            displayName={this.state.userObj.displayName}
+            profilePicURL={this.state.userObj.profilePicURL}
+            localAccount={this.state.userObj.authStrategy === "local"}
             showAbout={this.toggleAbout}
             logOut={() => this.handleChangeMode(AppMode.LOGIN)}
             />
-          <ModePage 
+           <ModePage 
+           displayName={this.state.userObj.displayName}
+           profilePicURL={this.state.userObj.profilePicURL}
+           localAccount={this.state.userObj.authStrategy === "local"}
             menuOpen={this.state.menuOpen}
             mode={this.state.mode}
             changeMode={this.handleChangeMode}
-            userId={this.state.userId}
-            setUserId={this.setUserId}
+            userObj={this.state.userObj}
+            refreshOnUpdate={this.refreshOnUpdate}
+            phoneNumber={this.state.userObj.phoneNumber}
             logOut={() => this.handleChangeMode(AppMode.LOGIN)}
             />
       </div>
